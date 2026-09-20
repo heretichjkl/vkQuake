@@ -94,7 +94,7 @@ cvar_t scr_autoclock = {"scr_autoclock", "1", CVAR_ARCHIVE};
 cvar_t scr_usekfont = {"scr_usekfont", "0", CVAR_NONE}; // 2021 re-release
 cvar_t scr_style = {"scr_style", "0", CVAR_ARCHIVE_GAME};
 
-cvar_t hrt_speed = {"hrt_speed", "1", CVAR_ARCHIVE};
+cvar_t hrt_speed = {"hrt_speed", "0", CVAR_ARCHIVE};
 // 0 - Above sbar, 1, 2, ..., n - under crosshair ( different distance )
 
 cvar_t scr_viewsize = {"viewsize", "100", CVAR_ARCHIVE_GAME};
