@@ -24,6 +24,7 @@ Windows/VisualStudio/Build-*
 Windows/VisualStudio/enc_temp_folder
 Packaging/AppImage/AppDir
 Packaging/AppImage/vkquake*
+Packaging/AppImage/*.AppImage
 Packaging/Windows/vkQuake-Installer-*.exe
 Packaging/Windows/vkQuake*.zip
 Misc/vq_pak/mkpak
