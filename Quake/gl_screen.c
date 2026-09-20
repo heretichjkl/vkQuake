@@ -93,6 +93,7 @@ cvar_t scr_clock = {"scr_clock", "0", CVAR_NONE};
 cvar_t scr_autoclock = {"scr_autoclock", "1", CVAR_ARCHIVE};
 cvar_t scr_usekfont = {"scr_usekfont", "0", CVAR_NONE}; // 2021 re-release
 cvar_t scr_style = {"scr_style", "0", CVAR_ARCHIVE_GAME};
+cvar_t scr_hrt_speed = {"scr_hrt_speed", "1", CVAR_ARCHIVE};
 
 cvar_t scr_viewsize = {"viewsize", "100", CVAR_ARCHIVE_GAME};
 cvar_t scr_viewsize_allow_shrinking = {"viewsize_allow_shrinking", "0", CVAR_ARCHIVE_GAME};
@@ -598,6 +599,7 @@ void SCR_Init (void)
 	Cvar_RegisterVariable (&scr_showfps);
 	Cvar_RegisterVariable (&scr_clock);
 	Cvar_RegisterVariable (&scr_autoclock);
+	Cvar_RegisterVariable (&scr_hrt_speed);
 	// johnfitz
 	Cvar_RegisterVariable (&scr_usekfont); // 2021 re-release
 	Cvar_SetCallback (&scr_fov, SCR_Callback_refdef);
@@ -699,6 +701,21 @@ static void SCR_DrawFPS (cb_context_t *cbx)
 		GL_SetCanvas (cbx, CANVAS_BOTTOMRIGHT);
 		Draw_String (cbx, x, y, st);
 	}
+}
+
+static void SCR_HRT_Speed (cb_context_t *cbx)
+{
+	if (!scr_hrt_speed.value)
+		return;
+	char st[8];
+	int x, y;
+
+	float speed = VectorLength(cl.velocity);
+	q_snprintf(st, sizeof (st), "%d", (int) speed);
+	x = 0 - (strlen (st) << 2);
+	y = 0 + CHARACTER_SIZE;
+	GL_SetCanvas(cbx, CANVAS_CROSSHAIR);
+	Draw_String(cbx, x, y, st);
 }
 
 /*
@@ -1489,6 +1506,7 @@ static void SCR_DrawGUI (void *unused)
 		SCR_DrawSpeeds (cbx);
 		SCR_DrawClock (cbx); // johnfitz
 		SCR_DrawEdictInfo (cbx);
+		SCR_HRT_Speed (cbx);
 		SCR_DrawConsole (cbx);
 		M_Draw (cbx);
 	}
