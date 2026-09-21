@@ -95,6 +95,8 @@ cvar_t scr_usekfont = {"scr_usekfont", "0", CVAR_NONE}; // 2021 re-release
 cvar_t scr_style = {"scr_style", "0", CVAR_ARCHIVE_GAME};
 
 cvar_t hrt_speed = {"hrt_speed", "0", CVAR_ARCHIVE};
+cvar_t hrt_speed_jmp = {"hrt_speed_jmp", "0", CVAR_ARCHIVE};
+
 // 0 - Above sbar, 1, 2, ..., n - under crosshair ( different distance )
 
 cvar_t scr_viewsize = {"viewsize", "100", CVAR_ARCHIVE_GAME};
@@ -602,6 +604,7 @@ void SCR_Init (void)
 	Cvar_RegisterVariable (&scr_clock);
 	Cvar_RegisterVariable (&scr_autoclock);
 	Cvar_RegisterVariable (&hrt_speed);
+	Cvar_RegisterVariable (&hrt_speed_jmp);
 
 	// johnfitz
 	Cvar_RegisterVariable (&scr_usekfont); // 2021 re-release
@@ -708,18 +711,41 @@ static void SCR_DrawFPS (cb_context_t *cbx)
 
 static void SCR_HRT_Speed (cb_context_t *cbx)
 {
-	if (!hrt_speed.value)
+	if (!hrt_speed.value && !hrt_speed_jmp.value)
 		return;
-	char st[32];
-	int x, y;
+	char st[8];
+	char st_jmp[8];
+	float speed;
+	static float speed_prev = 0;
+	static float speed_jmp = 0;
+	int x1, y1, x2, y2;
 
-	float speed = VectorLength(cl.velocity);
+	qboolean did_jump = false;
+	static qboolean did_jump_lock = false;
+
+	if (!cl.onground && !did_jump_lock)
+	{
+		did_jump = did_jump_lock = true;
+	}
+	else if (cl.onground && did_jump_lock)
+	{
+		did_jump_lock = false;
+	}
+
+	if (did_jump) speed_jmp = speed_prev;
+	speed_prev = speed = VectorLength(cl.velocity);
+
 	q_snprintf(st, sizeof (st), "%d", (int) speed);
-	x =  -(strlen (st) << 2);
-	y = CHARACTER_SIZE * 2;
+	q_snprintf(st_jmp, sizeof (st_jmp), "%d", (int) speed_jmp);
+
+	x1 =  -(strlen (st) << 2);
+	y1 = CHARACTER_SIZE * 2;
+	x2 =  -(strlen (st_jmp) << 2);
+	y2 = CHARACTER_SIZE * 3;
 
 	GL_SetCanvas(cbx, CANVAS_CROSSHAIR);
-	Draw_String(cbx, x, y, st);
+	if (hrt_speed.value) Draw_String(cbx, x1, y1, st);
+	if (hrt_speed_jmp.value) Draw_String(cbx, x2, y2, st_jmp);
 }
 
 /*
