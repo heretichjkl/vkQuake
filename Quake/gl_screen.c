@@ -716,7 +716,7 @@ static void SCR_HRT_Speed (cb_context_t *cbx)
 	char st[8];
 	char st_jmp[8];
 	float speed;
-	static float speed_prev = 0;
+	static float speed_pre_jmp = 0;
 	static float speed_jmp = 0;
 	int x1, y1, x2, y2;
 
@@ -732,8 +732,14 @@ static void SCR_HRT_Speed (cb_context_t *cbx)
 		did_jump_lock = false;
 	}
 
-	if (did_jump) speed_jmp = speed_prev;
-	speed_prev = speed = VectorLength(cl.velocity);
+	if (did_jump) speed_jmp = speed_pre_jmp;
+	vec3_t v;
+	v[0] = cl.velocity[0];
+	v[1] = cl.velocity[1];
+	v[2] = 0;
+
+	speed = VectorLength(cl.velocity);
+	speed_pre_jmp = VectorLength(v);
 
 	q_snprintf(st, sizeof (st), "%d", (int) speed);
 	q_snprintf(st_jmp, sizeof (st_jmp), "%d", (int) speed_jmp);
